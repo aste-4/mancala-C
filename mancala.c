@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define BUFSIZE 256
 
@@ -14,10 +15,13 @@ typedef struct board {
 PBOARD Binfo;
 
 void init_board(int pit_num, int stone_num);
+bool sowing(int player, int pitID);
 void print_board();
 
 int main(int argc, char const *argv[]) {
     init_board(3, 3);
+    print_board();
+    sowing(0, 0);
     print_board();
 
     return 0;
@@ -40,6 +44,28 @@ void init_board(int pit_num, int stone_num) {
     free(ptr);
     prev->next= pit;
     Binfo= pit;
+}
+
+bool sowing(int player, int pitID) {
+    int pick= 0;
+    PBOARD ptr= Binfo;
+    do {
+        if(ptr->player == player && ptr->pitID == pitID) {
+            pick= ptr->stone;
+            break;
+        }
+        ptr= ptr->next;
+    } while(ptr != Binfo);
+
+    if(pick == 0 || pitID < 0) exit(EXIT_FAILURE);
+    ptr->stone= 0;
+    while(pick > 0) {
+        ptr= ptr->next;
+        ptr->stone++;
+        pick--;
+    }
+    if(ptr->pitID < 0) return true;
+    return false;
 }
 
 void print_board() {
