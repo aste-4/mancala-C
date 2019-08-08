@@ -16,14 +16,25 @@ PBOARD Binfo;
 
 void init_board(int pit_num, int stone_num);
 bool sowing(int player, int pitID);
+int sum_player_stones(int player);
 void print_board();
 
 int main(int argc, char const *argv[]) {
+    int player= 0, pitID;
     init_board(3, 3);
+    while(sum_player_stones(0) * sum_player_stones(1) != 0) {
+        do {
+            print_board();
+            printf("Player %d's turn. Choose your pit: ", player);
+            scanf("%6d", &pitID);
+            while(getchar() != '\n') {
+            };
+        } while(sowing(player, pitID) && sum_player_stones(0) * sum_player_stones(1) != 0);
+        player= 1 - player;
+    }
+    player= 1 - player;
     print_board();
-    sowing(0, 0);
-    print_board();
-
+    printf("The winner is player %d!\n", player);
     return 0;
 }
 
@@ -57,15 +68,33 @@ bool sowing(int player, int pitID) {
         ptr= ptr->next;
     } while(ptr != Binfo);
 
-    if(pick == 0 || pitID < 0) exit(EXIT_FAILURE);
+    if(pick == 0 || pitID < 0) {
+        printf("Sowing failed. Please try again.\n");
+        return true;
+    }
     ptr->stone= 0;
     while(pick > 0) {
         ptr= ptr->next;
         ptr->stone++;
         pick--;
     }
-    if(ptr->pitID < 0) return true;
+    if(ptr->pitID < 0) {
+        printf("Sowing was finished at the store. You can sowing once again!\n");
+        return true;
+    }
     return false;
+}
+
+int sum_player_stones(int player) {
+    PBOARD ptr= Binfo;
+    int sum= 0;
+    do {
+        if(ptr->player == player && ptr->pitID >= 0) {
+            sum+= ptr->stone;
+        }
+        ptr= ptr->next;
+    } while(ptr != Binfo);
+    return sum;
 }
 
 void print_board() {
@@ -85,6 +114,6 @@ void print_board() {
         }
         ptr= ptr->next;
     } while(ptr != Binfo);
-    printf("{player:1} %s\n", p1info);
-    printf("{player:0}         %s\n", p0info);
+    printf("{player:1} %s        (stones in pit: %2d)\n", p1info, sum_player_stones(1));
+    printf("{player:0}         %s(stones in pit: %2d)\n", p0info, sum_player_stones(0));
 }
