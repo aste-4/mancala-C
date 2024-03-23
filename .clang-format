@@ -1,0 +1,8 @@
+# 既定値はGoogleスタイル
+BasedOnStyle: Google
+# インデント幅は4
+IndentWidth: 4
+# 1行あたりの最大文字数を無制限
+ColumnLimit: 0
+# カッコ前の空白は常になし
+SpaceBeforeParens: Never
